@@ -1,47 +1,73 @@
  import React, { Component } from 'react';
  import albumData from './../data/albums';
 
- class Album extends Component {
-   constructor(props) {
-        super(props);
+class Album extends Component {
+  constructor(props) {
+    super(props);
 
-             const album = albumData.find( album => {
-               return album.slug === this.props.match.params.slug
-             });
+    const album = albumData.find( album => {
+     return album.slug === this.props.match.params.slug
+    });
 
-             this.state = {
-               album: album,
-               currentSong: album.songs[0],
-               isPlaying: false
-             };
+    this.state = {
+     album: album,
+     currentSong: album.songs[0],
+     isPlaying: false,
+     songHoveredIndex: '',
+    };
 
-             this.audioElement = document.createElement('audio');
-             this.audioElement.src = album.songs[0].audioSrc;
-              }
+    this.audioElement = document.createElement('audio');
+    this.audioElement.src = album.songs[0].audioSrc;
+  }
 
-          play() {
-              this.audioElement.play();
-              this.setState({ isPlaying: true });
-            }
-          pause() {
-              this.audioElement.pause();
-              this.setState({ isPlaying: false });
-            }
+  play() {
+    this.audioElement.play();
+    this.setState({ isPlaying: true });
+  }
 
-          setSong(song) {
-               this.audioElement.src = song.audioSrc;
-               this.setState({ currentSong: song });
-             }
+  pause() {
+    this.audioElement.pause();
+    this.setState({ isPlaying: false });
+  }
 
-           handleSongClick(song) {
-                const isSameSong = this.state.currentSong === song;
-                if (this.state.isPlaying && isSameSong) {
-                   this.pause();
-                 } else {
-                   if (!isSameSong) { this.setSong(song); }     
-                   this.play();
-                 }
-              }
+  setSong(song) {
+    this.audioElement.src = song.audioSrc;
+    this.setState({ currentSong: song });
+  }
+
+  handleSongClick(song) {
+    const isSameSong = this.state.currentSong === song;
+    if (this.state.isPlaying && isSameSong) {
+      this.pause();
+    } else {
+      if (!isSameSong) { this.setSong(song); }
+      this.play();
+    }
+  }
+
+  renderPausePlayButton(i, song) {
+    if (this.state.isPlaying && this.state.currentSong === song) {
+      return <span className="icon ion-md-pause"></span>
+    }
+
+    if (this.state.songHoveredIndex === i) {
+      return <span className="icon ion-md-play"></span>
+    }
+
+    return i + 1;
+  }
+
+  handleMouseEnter(i){
+    this.setState({
+      songHoveredIndex: i
+    })
+  }
+
+  handleMouseLeave() {
+    this.setState({
+      songHoveredIndex: ''
+    })
+  }
 
   render() {
     return (
@@ -65,7 +91,10 @@
              this.state.album.songs.map((song, i) => {
                return (
                  <tr className="song" key={i} onClick={() => this.handleSongClick(song)} >>
-                   <td>{i + 1}</td>
+                   <td
+                     onMouseEnter={() => this.handleMouseEnter(i)}
+                     onMouseLeave={() => this.handleMouseLeave()}
+                   >{this.renderPausePlayButton(i, song)}</td>
                    <td>{song.title}</td>
                    <td>{song.duration}</td>
                  </tr>
