@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Route, Link} from 'react-router-dom';
+import 'material-design-lite/material.min.css'
 import './App.css';
 import Landing from './components/Landing';
 import Library from './components/Library';
