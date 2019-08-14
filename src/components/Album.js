@@ -15,12 +15,13 @@ class Album extends Component {
      currentSong: album.songs[0],
      currentTime: 0,
      duration: album.songs[0].duration,
-     currentVolume: 50,
+     currentVolume: 0.5,
      isPlaying: false,
      songHoveredIndex: '',
     };
 
     this.audioElement = document.createElement('audio');
+    this.audioElement.volume = 0.5;
     this.audioElement.src = album.songs[0].audioSrc;
   }
 
@@ -116,15 +117,16 @@ class Album extends Component {
   }
 
   handleVolumeChange(m) {
-    const newVolume = this.audioElement.volume * m.target.value;
-    this.audioElement.currentVolume = newVolume;
-    this.setState({ currentVolume: newVolume });
+    this.audioElement.volume = m.target.value;
+    this.setState({ currentVolume: m.target.value });
   }
 
   formatTime(duration) {
-    var m= Math.floor(duration % 3600 / 60);
-    var s= Math.floor(duration % 3600 % 60);
-    return duration ;
+    const m= Math.floor(duration % 3600 / 60);
+    const s= Math.floor(duration % 60);
+    const secondInTwoDigit = s > 9 ? s : '0' + s;
+
+    return `${m}:${secondInTwoDigit}`;
   }
 
   render() {
@@ -166,6 +168,7 @@ class Album extends Component {
            currentSong={this.state.currentSong}
            currentTime={this.audioElement.currentTime}
            duration={this.audioElement.duration}
+           formatTime={this.formatTime}
            currentVolume={this.audioElement.volume}
            handleSongClick={() => this.handleSongClick(this.state.currentSong)}
            handlePrevClick={() => this.handlePrevClick()}
